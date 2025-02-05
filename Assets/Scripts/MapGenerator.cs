@@ -16,6 +16,9 @@ public class MapGenerator : MonoBehaviour
 
     private void GenerateMap()
     {
+        if (GameObject.Find("Generated Maze"))
+            Destroy(GameObject.Find("Generated Maze"));
+
         GameObject map = new GameObject("Generated Maze");
 
         // Row
@@ -34,11 +37,16 @@ public class MapGenerator : MonoBehaviour
                     tile = Instantiate(_endTile, map.transform);
                 // Regular Maze Tile
                 else
+                {
                     tile = Instantiate(_mazeTile, map.transform);
+                    tile.transform.rotation = Quaternion.Euler(-90, 0, Random.Range(0, 4) * 90);
+                }
 
                 tile.transform.position = new Vector3(_tileSize.x * row, 0,_tileSize.y * col);
             }
         }
+
+        Debug.Log("<color=green> Generated Maze Successfuly.</color>");
     }
 
     private void OnValidate()
