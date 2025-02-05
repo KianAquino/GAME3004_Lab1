@@ -3,9 +3,11 @@ using UnityEngine;
 public class MapGenerator : MonoBehaviour
 {
     [SerializeField] Vector2 _size = new Vector2(3, 3);
+    [Header("Prefabs")]
     [SerializeField] GameObject _startTile;
     [SerializeField] GameObject _mazeTile;
     [SerializeField] GameObject _endTile;
+    [SerializeField] GameObject _scoreGiver;
 
     private Vector2 _tileSize = new Vector2(16, 16);
 
@@ -40,9 +42,11 @@ public class MapGenerator : MonoBehaviour
                 {
                     tile = Instantiate(_mazeTile, map.transform);
                     tile.transform.rotation = Quaternion.Euler(-90, 0, Random.Range(0, 4) * 90);
+
+                    // Score Givers (4 on each tile; Random locations)
                 }
 
-                tile.transform.position = new Vector3(_tileSize.x * row, 0,_tileSize.y * col);
+                tile.transform.localPosition = new Vector3(_tileSize.x * row, 0,_tileSize.y * col);
             }
         }
 
