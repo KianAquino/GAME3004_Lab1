@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class MapGenerator : MonoBehaviour
 {
@@ -30,27 +32,57 @@ public class MapGenerator : MonoBehaviour
             for (int col = 0; col < _size.y; col++)
             {
                 GameObject tile;
+                Vector3 tilePosition = new Vector3(_tileSize.x * row, 0, _tileSize.y * col);
 
                 // Start Tile
                 if (row == 0 && col == 0)
-                    tile = Instantiate(_startTile, map.transform);
+                    tile = Instantiate(_startTile, tilePosition, Quaternion.identity, map.transform);
                 // End Tile
                 else if (row == _size.x - 1 && col == _size.y - 1)
-                    tile = Instantiate(_endTile, map.transform);
+                    tile = Instantiate(_endTile, tilePosition, Quaternion.identity, map.transform);
                 // Regular Maze Tile
                 else
                 {
-                    tile = Instantiate(_mazeTile, map.transform);
+                    tile = Instantiate(_mazeTile, tilePosition, Quaternion.identity, map.transform);
                     tile.transform.rotation = Quaternion.Euler(-90, 0, Random.Range(0, 4) * 90);
 
                     // Score Givers (4 on each tile; Random locations)
-                }
+                    List<int> randomLocations = GetRandomScoreLocations();
+                    Transform pickupLocations = tile.transform.Find("Pickup Locations");
 
-                tile.transform.localPosition = new Vector3(_tileSize.x * row, 0,_tileSize.y * col);
+                    for (int i = 0; i < 4; i++)
+                    {
+                        Transform spawnPoint = pickupLocations.GetChild(randomLocations[i]);
+                        Vector3 scorePosition = spawnPoint.position;
+                        Instantiate(_scoreGiver, scorePosition, Quaternion.identity, map.transform);
+                    }
+                }
             }
         }
 
         Debug.Log("<color=green> Generated Maze Successfuly.</color>");
+    }
+
+    private List<int> GetRandomScoreLocations()
+    {
+        List<int> totalLocations = new List<int>();
+
+        for (int i = 1; i <= 12; i++)
+            totalLocations.Add(i);
+
+        // Shuffle
+        for (int i = 0; i < totalLocations.Count; i++)
+        {
+            int randomIndex = Random.Range(i, totalLocations.Count);
+            (totalLocations[i], totalLocations[randomIndex]) = (totalLocations[i], totalLocations[randomIndex]); // Tuple Swap
+        }
+
+        List<int> result = new List<int>();
+
+        for (int i = 0; i < 4; i++)
+            result.Add(totalLocations[i]);
+
+        return result;
     }
 
     private void OnValidate()
